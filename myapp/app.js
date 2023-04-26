@@ -22,7 +22,7 @@ var spotifyApi = new SpotifyWebApi({
 });
 
 app.get('/login', (req, res) => {
-  res.end(spotifyApi.createAuthorizeURL(scopes));
+  res.redirect(spotifyApi.createAuthorizeURL(scopes));
 })
 
 
@@ -66,7 +66,7 @@ app.get('/', (req, res) => {
 
 app.get('/homepage', (req, res) => {
   spotifyApi.getMe().then(data => {
-    console.log(data);
+    res.render('index', {title: data.body.display_name});
   });
 })
 
