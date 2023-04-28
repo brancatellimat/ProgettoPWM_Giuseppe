@@ -66,7 +66,7 @@ app.get('/', (req, res) => {
 
 app.get('/homepage', (req, res) => {
   spotifyApi.getMe().then(data => {
-    res.render('index', {title: data.body.display_name});
+    res.render('index', {user: data.body});
   });
 })
 
