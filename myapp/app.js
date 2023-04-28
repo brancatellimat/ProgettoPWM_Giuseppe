@@ -10,6 +10,8 @@ const client_id = '5a1af06bc9f040e197b5d8ec7b323250';
 const secret = 'a3124554373e44809395acb941d6aa29';
 const uri = 'http://127.0.0.1:3000/callback';
 
+var loggedUser = {};
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
@@ -60,13 +62,17 @@ app.get('/callback', (req, res) => {
 
 app.get('/', (req, res) => {
   
-  res.render('index', {title: 'Titolo di prova'});
+  res.render('index', {user: loggedUser});
 
 })
 
 app.get('/homepage', (req, res) => {
   spotifyApi.getMe().then(data => {
-    res.render('index', {user: data.body});
+
+	loggedUser.me = data.body;
+	//console.log(loggedUser.me);
+
+    res.render('index', {user: loggedUser});
   });
 })
 
