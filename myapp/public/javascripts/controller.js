@@ -16,14 +16,14 @@ async function savePlaylist(id){
 }
 
 async function accedi(){
-    await fetch('/login').then(response => {
-      //console.log(response);
+    await fetch('http://127.0.0.1:3000/login').then(response => {
+      console.log(response);
       return response.text();
     }).then(data => {
       //console.log('Sono qui');
       window.location.href = data;
     });
-   /* let xhttp = new XMLHttpRequest();
+   /*let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = () => {
         //console.log(xhttp);
         if(xhttp.readyState == 4 && xhttp.status == 200)
@@ -53,6 +53,7 @@ async function logout(){
     xhttp.open('GET', '/logout', true);
     xhttp.send();*/
   }
+
 
   async function sendSearch(txt){
     await fetch('/search/'+txt+'/playlist').then(data=>{

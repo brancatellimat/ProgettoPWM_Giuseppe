@@ -10,7 +10,7 @@ const client_id = '5a1af06bc9f040e197b5d8ec7b323250';
 const secret = 'a3124554373e44809395acb941d6aa29';
 const uri = 'http://127.0.0.1:3000/callback';
 
-var loggedUser = {};
+var user = {};
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -26,7 +26,7 @@ var spotifyApi = new SpotifyWebApi({
 
 app.get('/', (req, res) => {
   
-  res.render('index', {user: loggedUser});
+  res.render('index', {user: user});
 
 })
 
@@ -69,11 +69,25 @@ app.get('/callback', (req, res) => {
 app.get('/homepage', (req, res) => {
   spotifyApi.getMe().then(data => {
 
-	loggedUser.me = data.body;
-	//console.log(loggedUser.me);
+	user.userData = data.body;
+	//console.log(user.userData);
 
-    res.render('index', {user: loggedUser});
+    res.render('index', {user: user});
   });
+})
+
+app.get('/discover', (req, res) => {
+	res.render('discover', {user: user});
+})
+
+app.get('/search/:txt/:type', (req, res) => {
+	const txt = req.params.txt;
+	const type = req.params.type;
+	spotifyApi.search(txt, [type]).then(results => {
+		res.send(results.body);
+		console.log(results);
+	})
+
 })
 
 
