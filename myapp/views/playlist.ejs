@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <% if(user.userData === undefined){ %> 
+      <title>Nome della mia applicazione</title>
+    <% }else{ %> 
+      <title>App - <%= user.userData.id %></title>
+    <% } %>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8"> 
+    <link rel="icon" type="image/x-icon" href="/images/favicon.png">
+    <!--Bootstrap CSS-->
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+    <!--Custom CSS-->
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <!--boxicons css-->
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- Slick Slider CSS
+    <link rel="stylesheet" type="text/css" href="slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="slick/slick-theme.css"/>
+    -->
+
+  </head>
+  <body>
+    
+    <!--SIDEBAR-->
+    <nav class="sidebar close">
+      <header>
+        <div class="image-text">
+        <% if(user.userData === undefined){ %> 
+          <span class="image">
+            <i class='bx bx-user-circle icon'></i>
+          </span>
+          <div class="text logo-text">
+            <a class="name" onclick="accedi()">Accedi</a>
+          </div>
+        <% }else{ %>
+          <span class="image">
+            <% if(user.userData.images.length == 0){ %> 
+            <img src="/images/spotify-logo-24.png" alt="Profile pic">
+            <% }else{ %> 
+            <img src="<%= user.userData.images[0].url %>" alt="Profile pic">
+            <% } %>
+          </span>
+          <div class="text logo-text">
+            <span class="name">Ciao</span>
+            <span class="profession text-truncate" style="text-overflow:unset;"><%= user.userData.id %></span>
+          </div>
+        <% } %>
+        </div>
+
+        <i class="bx bx-x toggle-x"></i>
+        <i class="bx bx-chevron-right toggle-arrow"></i>
+      </header>
+
+      <div class="menu-bar">
+        <div class="menu">
+          <li class="spoti-box">
+            <a href="https://www.spotify.com/it/">
+              <i class='bx bxl-spotify icon'></i>
+              <span class="text nav-text">Spotify</span>
+            </a>  
+          </li>
+          <ul class="menu-links px-0">
+            <li>
+             <% if(user.userData === undefined){ %><a href="/"> <% }else{ %><a href="/homepage"><% } %>
+                <i class="bx bx-home-alt icon"></i>
+                <span class="text nav-text">Homepage</span>
+              </a>
+            </li>
+            <li>
+              <a href="/create">
+                <i class='bx bx-list-plus icon'></i>
+                  <span class="text nav-text">Create</span>
+              </a>
+            </li>
+            <li>
+              <a href="/discover" class="active">
+                <i class='bx bx-world icon'></i>
+                  <span class="text nav-text">Discover</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="bottom-content">
+          <% if(user.userData === undefined){%> 
+            <li>
+              <a onclick="accedi()">
+                <i class="bx bx-log-in icon"></i>
+                <span class="text nav-text">Login</span>
+              </a>
+            </li>
+          <% }else{ %> 
+            <li>
+              <a onclick="logout()">
+                <i class="bx bx-log-out icon"></i>
+                <span class="text nav-text">Logout</span>
+              </a>
+            </li>
+          <% }%>
+          <li class="mode">
+            <div class="sun-moon">
+              <i class="bx bx-moon icon moon"></i>
+              <i class="bx bx-sun icon sun"></i>
+            </div>
+            <span class="mode-text text">Dark mode</span>
+            <div class="toggle-switch">
+              <span class="switch"></span>
+            </div>
+          </li>
+        </div>
+      </div>
+    </nav>
+    <!--End sidebar-->
+    <section class="home" style="white-space: normal;">
+        <div class="container">
+          <div class="card">
+            <i class="bx bx-menu sidebarOpen"></i>
+            <div class="card-body">
+              <!--hero section-->
+  
+              <div class="row p-4 pb-0 pe-lg-0 pt-lg-5 align-items-center rounded-3">
+                  <div class="col-lg-7 p-3 p-lg-5 pt-lg-3">
+                    <h1 class="display-4 fw-bold lh-1"><%= playlist.name %></h1>
+                    <p class="lead"><%= playlist.description %></p>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
+                      <% if(status == 'no-login'){ %> 
+                        <a id="addButton" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold">
+                          <i class="bx bx-log-in" id='addIcon'></i>
+                          <span id="addText">Accedi per salvare</span>
+                        </a>
+                      <% }else if(status == 'present'){ %>
+                        <a id="addButton" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold">
+                          <i class="bx bxs-heart" id='addIcon'></i>
+                          <span id="addText">Salvata</span>
+                        </a>
+                      <% }else{ %> 
+                        <a onclick="savePlaylist('<%= playlist.id %>')" id="addButton" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold">
+                          <i class="bx bx-heart" id='addIcon'></i>
+                          <span id="addText">Salva</span>
+                        </a>
+                      <% } %>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 offset-lg-1 p-0 overflow-hidden shadow-lg">
+                      <img class="rounded-lg-3" src="<%= playlist.images[0].url %>" alt="" width="720">
+                  </div>
+                </div>
+              <!--end hero section-->
+  
+  
+              <!--Playlist content-->
+              <div class="py-4 table-responsive">
+                  <table class="table-sm table-borderless align-middle" style="table-layout: fixed;">
+                      <thead>
+                          <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Titolo</th>
+                              <th scope="col">Album</th>
+                              <th scope="col">Durata</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                      <% let index = 1; %>
+                      <% playlist.tracks.items.forEach(el => { %>
+                          <% if(el.track != undefined){%>
+                          <% let names = ''; %>
+                          <tr>
+                              <th scope="row" class="text-center px-4""><%= index %></th>
+                              <td class="px-4"><div class="d-flex flex-row" style="max-width: 30rem;">
+                                  <% if(el.track == undefined){ %>
+                                  <img src="/images/default.jpg" alt="Album cover" width="70" class="rounded px-1 py-1">  
+                                  <% }else{ %> 
+                                  <img src="<%= el.track.album.images[0].url %>" alt="Album cover" width="70" class="rounded px-1 py-1">
+                                  <% } %>
+                                  <div class="d-flex flex-column text-truncate align-middle py-2 px-2">
+                                      <span class="text-truncate fw-500"><%= el.track.name %></span>
+                                      <% el.track.artists.forEach(artist => { %> 
+                                      <%  names += artist.name + ' '; %>
+                                      <% }) %>
+                                      <p class="text-truncate fw-200"><%= names %></p>
+                                  </div>
+                              </div></td>
+                              <td><div class="text-truncate" style="max-width: 30rem;"><span class="text-truncate px-4"><%= el.track.album.name %></span></div></td>
+                              <% function millisToMinutesAndSeconds(millis) { %>
+                              <% var minutes = Math.floor(millis / 60000); %>
+                              <% var seconds = ((millis % 60000) / 1000).toFixed(0); %>
+                              <% return minutes + ":" + (seconds < 10 ? '0' : '') + seconds; %>
+                              <% } %>
+                              <td class="px-4"><%= millisToMinutesAndSeconds(el.track.duration_ms) %></td>
+                          </tr>
+                      <% index++; %>
+                      <% } %>
+                      <% }) %>
+                      </tbody>
+                    </table>
+              </div>
+              
+            </div>
+            <footer class="d-flex flex-wrap justify-content-between align-items-center px-4 py-3 my-4 border-top">
+              <p class="col-md-4 mb-0 text-muted">&copy; 2022 Playlitic, Inc</p>
+          
+              <a href="https://developer.spotify.com/documentation/web-api/" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+                Powered by Spotify API
+                <i class='bx bxl-spotify icon spotify-icon'></i>
+              </a>
+          
+              <ul class="nav col-md-4 justify-content-end" id="footer-links">
+                <li class="nav-item"><a href="/homepage" class="nav-link px-2 text-muted">Homepage</a></li>
+                <li class="nav-item"><a href="/create" class="nav-link px-2 text-muted">Create</a></li>
+                <li class="nav-item"><a href="/discover" class="nav-link px-2 text-muted">Discover</a></li>
+              </ul>
+            </footer>
+          </div>
+        </div>
+      </section>
+      <script src="/javascripts/bootstrap.js"></script>
+      
+      <!--sidebar js-->
+      <script type="text/javascript" src="/javascripts/sidebar.js"></script>
+      <!-- controller js-->
+      <script type="text/javascript" src="/javascripts/controller.js"></script>
+    </body>
+  </html>

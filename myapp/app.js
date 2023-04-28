@@ -90,6 +90,36 @@ app.get('/search/:txt/:type', (req, res) => {
 
 })
 
+app.get('/more/:idPlaylist', (req, res) => {
+	const idPlaylist = req.params.idPlaylist;
+	spotifyApi.getPlaylist(idPlaylist).then(results => {
+		if(user.userData === undefined){
+			res.render('playlist', {user: user, playlist: results.body, status: 'no-login'});
+		}else {
+			isInMyLibrary(idPlaylist, 'playlist').then(result => {
+				if(result){
+					res.render('playlist', {user: user, playlist: results.body, status: 'present'});
+				}else {
+					res.render('playlist', {user: user, playlist: results.body, status: 'absent'});
+				}
+			})
+		}
+	})
+})
+
+function isInMyLibrary(id, type){
+	if(type == 'playlist'){
+		return spotifyApi.getUserPlaylists().then(data => {
+			data.body.items.forEach(playlist => {
+				if(id === playlist.id){
+					return true;
+				}
+			});
+			return false;
+		});
+	}
+}
+
 
 var server = app.listen(port, () => {
 
