@@ -1,0 +1,28 @@
+
+
+.features-icons {
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+}
+.features-icons-item {
+    max-width: 20rem;
+}
+.features-icons-icon {
+    height: 7rem;
+}
+.features-icons-icon, i {
+    font-size: 4.5rem;
+}
+
+
+.playlists {
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+}
+.playlists-item {
+    max-width: 18rem;
+}
+.playlists-item, img {
+    max-width: 12rem;
+    box-shadow: 0px 5px 5px 0px $gray-500;
+}
