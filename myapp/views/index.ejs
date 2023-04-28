@@ -1,11 +1,282 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <% if(user.me === undefined){ %> 
+      <title>Nome della mia applicazione</title>
+    <% }else{ %> 
+      <title>App - <%= user.me.id %></title>
+    <% } %>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8"> 
+    <link rel="icon" type="image/x-icon" href="/images/favicon.png">
+    <!--Bootstrap CSS-->
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+    <!--Custom CSS-->
+    <link rel="stylesheet" href="/stylesheets/index.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <!--boxicons css-->
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- Slick Slider CSS
+    <link rel="stylesheet" type="text/css" href="slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="slick/slick-theme.css"/>
+    -->
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    
+    <!--SIDEBAR-->
+    <nav class="sidebar close">
+      <header>
+        <div class="image-text">
+        <% if(user.me === undefined){ %> 
+          <span class="image">
+            <i class='bx bx-user-circle icon'></i>
+          </span>
+          <div class="text logo-text">
+            <a class="name" onclick="accedi()">Accedi</a>
+          </div>
+        <% }else{ %>
+          <span class="image">
+            <% if(user.me.images.length == 0){ %> 
+            <img src="/images/spotify-logo-24.png" alt="Profile pic">
+            <% }else{ %> 
+            <img src="<%= user.me.images[0].url %>" alt="Profile pic">
+            <% } %>
+          </span>
+          <div class="text logo-text">
+            <span class="name">Ciao</span>
+            <span class="profession text-truncate" style="text-overflow:unset;"><%= user.me.id %></span>
+          </div>
+        <% } %>
+        </div>
+
+        <i class="bx bx-x toggle-x"></i>
+        <i class="bx bx-chevron-right toggle-arrow"></i>
+      </header>
+
+      <div class="menu-bar">
+        <div class="menu">
+          <li class="spoti-box">
+            <a href="https://www.spotify.com/it/">
+              <i class='bx bxl-spotify icon'></i>
+              <span class="text nav-text">Spotify</span>
+            </a>  
+          </li>
+          <ul class="menu-links px-0">
+            <li>
+             <% if(user.me === undefined){ %><a href="/" class="active"> <% }else{ %><a href="/homepage" class="active"><% } %>
+                <i class="bx bx-home-alt icon"></i>
+                <span class="text nav-text">Homepage</span>
+              </a>
+            </li>
+            <li>
+              <a href="/create">
+                <i class='bx bx-list-plus icon'></i>
+                  <span class="text nav-text">Create</span>
+              </a>
+            </li>
+            <li>
+              <a href="/discover">
+                <i class='bx bx-world icon'></i>
+                  <span class="text nav-text">Discover</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="bottom-content">
+          <% if(user.me === undefined){%> 
+            <li>
+              <a onclick="accedi()">
+                <i class="bx bx-log-in icon"></i>
+                <span class="text nav-text">Login</span>
+              </a>
+            </li>
+          <% }else{ %> 
+            <li>
+              <a onclick="logout()">
+                <i class="bx bx-log-out icon"></i>
+                <span class="text nav-text">Logout</span>
+              </a>
+            </li>
+          <% }%>
+          <li class="mode">
+            <div class="sun-moon">
+              <i class="bx bx-moon icon moon"></i>
+              <i class="bx bx-sun icon sun"></i>
+            </div>
+            <span class="mode-text text">Dark mode</span>
+            <div class="toggle-switch">
+              <span class="switch"></span>
+            </div>
+          </li>
+        </div>
+      </div>
+    </nav>
+    <!--End sidebar-->
+
+    <section class="home" style="white-space: normal;">
+      <div class="container">
+        <div class="card">
+          <i class="bx bx-menu sidebarOpen"></i>
+          <div class="card-body">
+            <!--hero section-->
+            <div class="px-4 py-4 mt-5 mb-auto text-center">
+              <img class="d-block mx-auto mb-4" src="/images/logo.png" alt="" width="172" height="157">
+              <h1 class="display-5 fw-bold">Benvenuto in Playlitic</h1>
+              <div class="col-lg-6 mx-auto">
+                <div>
+                  <p class="lead mb-4" style="white-space: normal;">Playlitic è un'applicazione web che ti permette di creare playlist personalizzate e in base alla tua attività musicale sul tuo account Spotify. Inizia subito a creare la playlist perfetta per te.</p>
+                </div>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                  <a href="/create" class="btn btn-primary btn-lg px-4 gap-3">Crea Playlist</button>
+                  <a href="/discover" class="btn btn-outline-secondary btn-lg px-4">Esplora</a>
+                </div>
+              </div>
+            </div>
+            <!--end hero section-->
+
+            <!--Icons section-->
+            <section class="features-icons text-center">
+              <div class="container">
+                <div class="row">
+                  <div class="col-lg-4 col-12 my-auto py-2">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                      <div class="features-icons-icon d-flex flex-column">
+                        <i class='bx bx-edit'></i>
+                        <h4 class="text">Crea</h4>
+                        <h6>Playlist personalizzate in base ai tuoi artisti preferiti</h6>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-12 my-auto py-2">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                      <div class="features-icons-icon d-flex flex-column">
+                        <i class='bx bx-search-alt' ></i>
+                        <h4 class="text">Cerca</h4>
+                        <h6>tra milioni di playlist</h6>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-12 my-auto py-2">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                      <div class="features-icons-icon d-flex flex-column">
+                        <i class='bx bx-heart' ></i>
+                        <h4 class="text">Salva</h4>
+                        <h6>direttamente sul tuo account Spotify</h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!--End feature icons section-->
+
+              <!--User playlists-->
+              <section class="playlists text-center pt-2 mt-4">
+                <div class="container">
+                  <h2 class="mb-5">Le tue playlists</h2>
+                  <% if(!(myItems.playlists === undefined)){ %>
+                  <div class="row">
+                    <% if(myItems.playlists.items.length == 0){ %> 
+                    <div class="text-center">
+                      <h5>Sembra che tu non abbia alcuna playlist!</h5>
+                    </div>
+                    <% }else{ %> 
+                    <div class="slider">
+                      <% myItems.playlists.items.forEach(playlist => { %>
+                        <div class="col-lg-4 mx-4">
+                          <div class="playlists-item mx-auto mb-5 mb-lg-0">
+                            <a href="/more/<%=playlist.id%>">
+                              <img src="<%= playlist.images[0].url %>" alt="Cover" class="img-fluid rounded-3 mb-3">
+                            </a>
+                            <h5><%= playlist.name %></h5>
+                            <p class="font-weight-light mb-0"><%= playlist.description %></p>
+                          </div>
+                        </div>
+                      <% }); %>
+                    </div>
+                    <% } %>
+                  </div>
+                  <% }else{ %> 
+                    <div class="text-center">
+                      <h5>Devi accedere per poter visualizzare le tue playlist.</h5>
+                      <a onclick="accedi()" id="login" class="btn btn-lg btn-secondary fw-bold ">Accedi</a>
+                    </div>
+                  <% } %>
+                </div>
+              </section>
+
+              
+            </div>
+            <footer class="d-flex flex-wrap justify-content-between align-items-center px-4 py-3 my-4 border-top">
+              <p class="col-md-4 mb-0 text-muted">&copy; 2022 Playlitic, Inc</p>
+          
+              <a href="https://developer.spotify.com/documentation/web-api/" id="link-to-spotify" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto text-decoration-none">
+                Powered by Spotify API
+                <i class='bx bxl-spotify icon spotify-icon'></i>
+              </a>
+          
+              <ul class="nav col-md-4 justify-content-end" id="footer-links">
+                <li class="nav-item"><a href="/homepage" class="nav-link px-2 text-muted">Homepage</a></li>
+                <li class="nav-item"><a href="/create" class="nav-link px-2 text-muted">Create</a></li>
+                <li class="nav-item"><a href="/discover" class="nav-link px-2 text-muted">Discover</a></li>
+              </ul>
+            </footer>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Playlitic</h5>
+          </div>
+          <div class="modal-body" id="modalBody">
+            <p id="msgBody"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary"><a style="text-decoration: none; color: #F6F5FF;" href="/homepage">Vai alla libreria</a></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/javascripts/bootstrap.js"></script>
+    <!--sidebar js-->
+    <script type="text/javascript" src="/javascripts/sidebar.js"></script>
+    <!-- controller js-->
+    <script type="text/javascript" src="/javascripts/controller.js"></script>
+
+    <!--Slick slider js + JQuery
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="slick/slick.min.js"></script>
+    <script type="text/javascript">
+      $('.slider').slick({
+        infinite: true,
+        slidesToShow: 3,
+        slidesToScroll: 3,
+        arrows: false,
+        dots: true,
+        speed: 1000,
+        responsive: [
+          {
+            breakpoint: 768,
+            settings: {
+              arrows: false,
+              dots: false,
+              centerMode: true,
+              slidesToShow: 1,
+              slidesToScroll: 1,
+              speed: 250
+            }
+          }
+        ] 
+      });
+    </script>
+  -->
   </body>
 </html>
