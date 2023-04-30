@@ -31,6 +31,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/login', (req, res) => {
+	console.log(spotifyApi.createAuthorizeURL(scopes));
 	res.redirect(spotifyApi.createAuthorizeURL(scopes));
   })
 

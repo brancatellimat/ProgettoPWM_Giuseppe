@@ -16,11 +16,12 @@ async function savePlaylist(id){
 }
 
 async function accedi(){
-    await fetch('http://127.0.0.1:3000/login').then(response => {
-      console.log(response);
-      return response.text();
+    await fetch('/login').then(response => {
+      console.log(response.url);
+      return response.url;
     }).then(data => {
       //console.log('Sono qui');
+      console.log(data);
       window.location.href = data;
     });
    /*let xhttp = new XMLHttpRequest();
