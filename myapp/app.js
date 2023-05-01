@@ -3,12 +3,17 @@ const SpotifyWebApi = require('spotify-web-api-node');
 const path = require('path');
 const app = express();
 const port = 3000;
+const bodyParser = require('body-parser');
 
+// App permissions
 const scopes = ['ugc-image-upload', 'user-read-email', 'user-read-private','playlist-read-collaborative','playlist-modify-public','playlist-read-private','playlist-modify-private','user-library-modify','user-library-read','user-top-read', 'user-read-playback-position','user-read-recently-played','user-follow-read','user-follow-modify'];
 
+// App credentials
 const client_id = '5a1af06bc9f040e197b5d8ec7b323250';
 const secret = 'a3124554373e44809395acb941d6aa29';
 const uri = 'http://127.0.0.1:3000/callback';
+
+app.use(bodyParser.urlencoded({ extended: false }));
 
 var user = {};
 
@@ -16,13 +21,29 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 
-// Set app credentials 
+// Set app credentials for logged users
 var spotifyApi = new SpotifyWebApi({
   clientId: client_id,
   clientSecret: secret,
   redirectUri: uri,
 });
 
+// TODO: set app credentials for not-logged users
+var spotifyApiNotLogged = new SpotifyWebApi({
+	clientId: client_id,
+	clientSecret: secret,
+});
+
+// Retrive an access token
+spotifyApiNotLogged.clientCredentialsGrant().then(
+	function(data){
+		// Save the access token so that it's used in future calls
+		console.log(data.body.access_token);
+		spotifyApiNotLogged.setAccessToken(data.body.access_token);
+	}, function(err) {
+		console.log('Something went wrong when retriving the access token', err);
+	}
+)
 
 app.get('/', (req, res) => {
   
@@ -31,9 +52,15 @@ app.get('/', (req, res) => {
 })
 
 app.get('/login', (req, res) => {
-	console.log(spotifyApi.createAuthorizeURL(scopes));
-	res.redirect(spotifyApi.createAuthorizeURL(scopes));
-  })
+	//console.log(spotifyApi.createAuthorizeURL(scopes));
+	res.end(spotifyApi.createAuthorizeURL(scopes));
+})
+
+app.get('/logout', (req, res) => {
+	user = {};
+	//library = {};
+	res.redirect('/');
+})
 
 app.get('/callback', (req, res) => {
 	const error = req. query.error;
@@ -84,7 +111,7 @@ app.get('/discover', (req, res) => {
 app.get('/search/:txt/:type', (req, res) => {
 	const txt = req.params.txt;
 	const type = req.params.type;
-	spotifyApi.search(txt, [type]).then(results => {
+	spotifyApiNotLogged.search(txt, [type]).then(results => {
 		res.send(results.body);
 		console.log(results);
 	})
@@ -93,7 +120,7 @@ app.get('/search/:txt/:type', (req, res) => {
 
 app.get('/more/:idPlaylist', (req, res) => {
 	const idPlaylist = req.params.idPlaylist;
-	spotifyApi.getPlaylist(idPlaylist).then(results => {
+	spotifyApiNotLogged.getPlaylist(idPlaylist).then(results => {
 		if(user.userData === undefined){
 			res.render('playlist', {user: user, playlist: results.body, status: 'no-login'});
 		}else {
@@ -105,7 +132,10 @@ app.get('/more/:idPlaylist', (req, res) => {
 				}
 			})
 		}
-	})
+	}).catch(err => {
+		res.render('error', {message: 'Errore nel cercare le playlist', error: err});
+	});
+	
 })
 
 function isInMyLibrary(id, type){
@@ -121,6 +151,45 @@ function isInMyLibrary(id, type){
 	}
 }
 
+app.get('/create', (req, res) => {
+	res.render('create', {user:user});
+})
+
+
+app.get('/createPlaylist/:data', (req, res)=>{
+
+	var playlistData = JSON.parse(req.params.data);
+	var id = '', playlistTracks = [];
+	//console.log(playlistData);
+	spotifyApi.createPlaylist(playlistData.title, {'description':playlistData.description, 'public':playlistData.isPublic}).then(data => {
+		//console.log(playlistData.artists);
+		return id = data.body.id;
+	}).then(id => {
+		console.log(playlistData.numElem);
+		return spotifyApi.getRecommendations({'limit': playlistData.numElem, 'seed_artists': playlistData.artists}).then(data => {
+			let tracks = data.body.tracks;
+			tracks.forEach(track => {
+				playlistTracks.push(track.uri);
+			}); 
+			return playlistTracks;
+		}).catch(err => {
+			console.log('Errore nel recuperare il contenuto ' + err);
+		});
+	}).then(array => {
+		return spotifyApi.addTracksToPlaylist(id, array).then(data => {
+			console.log('SONO QUI !!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+			return data;
+		}).catch(err => {
+			console.log('errore nell\'aggiungere le tracce alla playlist');
+		});
+	}).then((data)=>{
+		if(data.statusCode === 201){
+			res.send(data);
+		}
+	}).catch(err => {
+		console.log('Errore nel creare la playlist ' + err);
+	});
+});
 
 var server = app.listen(port, () => {
 

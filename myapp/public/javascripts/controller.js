@@ -16,15 +16,15 @@ async function savePlaylist(id){
 }
 
 async function accedi(){
-    await fetch('/login').then(response => {
+    /*await fetch('/login').then(response => {
       console.log(response.url);
       return response.url;
-    }).then(data => {
-      //console.log('Sono qui');
-      console.log(data);
-      window.location.href = data;
-    });
-   /*let xhttp = new XMLHttpRequest();
+    }).then(url => {
+      console.log('Sono qui');
+      console.log(typeof(url));
+      window.location.replace(url);
+    });*/
+   let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = () => {
         //console.log(xhttp);
         if(xhttp.readyState == 4 && xhttp.status == 200)
@@ -33,7 +33,7 @@ async function accedi(){
 
     xhttp.open('GET', '/login', true);
     xhttp.setRequestHeader('Access-Control-Allow-Origin', '*');
-    xhttp.send();*/
+    xhttp.send();
   }
 
 async function logout(){
