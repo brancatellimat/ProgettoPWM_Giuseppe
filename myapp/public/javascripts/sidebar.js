@@ -22,8 +22,8 @@ sidebar.classList.remove("close");
 })
 
 openSidebar.addEventListener("click" , () =>{
-  sidebar.classList.remove("close");
-  sidebar.classList.add("visible");
+  sidebar.classList.toggle("close");
+  sidebar.classList.toggle("visible");
 })
 
 //dark/light mode handler

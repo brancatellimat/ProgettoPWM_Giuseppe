@@ -15,7 +15,8 @@ const uri = 'http://127.0.0.1:3000/callback';
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
-var user = {};
+var user = {}; //Object for user data
+var library = {}; //Object for user items (e.g. playlist, artist, album..)
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -47,7 +48,7 @@ spotifyApiNotLogged.clientCredentialsGrant().then(
 
 app.get('/', (req, res) => {
   
-  res.render('index', {user: user});
+  res.render('index', {user: user, items: library});
 
 })
 
@@ -58,7 +59,7 @@ app.get('/login', (req, res) => {
 
 app.get('/logout', (req, res) => {
 	user = {};
-	//library = {};
+	library = {};
 	res.redirect('/');
 })
 
@@ -99,10 +100,21 @@ app.get('/homepage', (req, res) => {
 
 	user.userData = data.body;
 	//console.log(user.userData);
+	return spotifyApi.getUserPlaylists(user.userData.name).then(data => {
+		return data.body;
+	}).catch(err => {
+		res.render('error', {message: 'Errore nel recuperare le tue playlists.', error: err});
+	});
 
-    res.render('index', {user: user});
+    //res.render('index', {user: user});
+  }).then(playlists => {
+	library.playlistList = playlists;
+	res.render('index', {user: user, items: library});
+  }).catch(err => {
+	console.log(err);
+	res.render('error', {message: 'Errore nel recuperare i dati del tuo profilo.', error: err});
   });
-})
+});
 
 app.get('/discover', (req, res) => {
 	res.render('discover', {user: user});

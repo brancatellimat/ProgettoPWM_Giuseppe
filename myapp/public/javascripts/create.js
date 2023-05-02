@@ -119,5 +119,5 @@ function generatePlaylist(){
   }
 
   function updateTextValue(val){
-    document.getElementById('rangeValue').textContent = 'La tua playlist sarà formata da '+val+' tracce';
+    document.getElementById('rangeValue').innerHTML = 'La tua playlist sarà formata da <b>'+val+'</b> tracce';
   }

@@ -17,10 +17,9 @@
     <!--boxicons css-->
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
 
-    <!-- Slick Slider CSS
+    <!--Slick Slider CSS-->
     <link rel="stylesheet" type="text/css" href="slick/slick.css"/>
     <link rel="stylesheet" type="text/css" href="slick/slick-theme.css"/>
-    -->
   </head>
   <body>
     
@@ -138,7 +137,77 @@
               </div>
             </div>
             <!--end hero section-->
+            <!--Features section-->
+            <section class="features-icons text-center">
+              <div class="container">
+                <div class="row">
+                  <div class="col-lg-4 col-12 my-auto py-2">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                      <div class="features-icons-icon d-flex flex-column">
+                        <i class='bx bx-edit'></i>
+                        <h4 class="text">Crea</h4>
+                        <h6>Playlist personalizzate in base ai tuoi artisti preferiti</h6>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-12 my-auto py-2">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                      <div class="features-icons-icon d-flex flex-column">
+                        <i class='bx bx-search-alt' ></i>
+                        <h4 class="text">Cerca</h4>
+                        <h6>tra milioni di playlist</h6>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-12 my-auto py-2">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                      <div class="features-icons-icon d-flex flex-column">
+                        <i class='bx bx-heart' ></i>
+                        <h4 class="text">Salva</h4>
+                        <h6>direttamente sul tuo account Spotify</h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!--End feature icons section-->
               
+            <!--User playlists-->
+            <section class="playlists text-center pt-2 mt-4">
+              <div class="container">
+                <h2 class="mb-5">Le tue playlists</h2>
+                <% if(!(items.playlistList === undefined)){ %>
+                <div class="row">
+                  <% if(items.playlistList.items.length == 0){ %> 
+                  <div class="text-center">
+                    <h5>Sembra che tu non abbia alcuna playlist!</h5>
+                  </div>
+                  <% }else{ %> 
+                  <div class="slider">
+                    <% items.playlistList.items.forEach(playlist => { %>
+                      <div class="col-lg-4 mx-4">
+                        <div class="playlists-item mx-auto mb-5 mb-lg-0">
+                          <a href="/more/<%=playlist.id%>">
+                            <img src="<%= playlist.images[0].url %>" alt="Cover" class="img-fluid rounded-3 mb-3">
+                          </a>
+                          <h5><%= playlist.name %></h5>
+                          <p class="font-weight-light mb-0"><%= playlist.description %></p>
+                        </div>
+                      </div>
+                    <% }); %>
+                  </div>
+                  <% } %>
+                </div>
+                <% }else{ %> 
+                  <div class="text-center">
+                    <h5>Devi accedere per poter visualizzare le tue playlist.</h5>
+                    <a onclick="accedi()" id="login" class="btn btn-lg btn-secondary fw-bold ">Accedi</a>
+                  </div>
+                <% } %>
+              </div>
+            </section>
+
             </div>
             <footer class="d-flex flex-wrap justify-content-between align-items-center px-4 py-3 my-4 border-top">
               <p class="col-md-4 mb-0 text-muted">&copy; 2022 Playlitic, Inc</p>
@@ -159,7 +228,7 @@
         </div>
       </div>
     </div>
-  </section>
+    </section>
     <!-- Modal -->
     <div class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -182,7 +251,7 @@
     <!-- controller js-->
     <script type="text/javascript" src="/javascripts/controller.js"></script>
 
-    <!--Slick slider js + JQuery
+    <!--Slick slider js + JQuery-->
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script type="text/javascript" src="slick/slick.min.js"></script>
@@ -209,6 +278,5 @@
         ] 
       });
     </script>
-  -->
   </body>
 </html>
