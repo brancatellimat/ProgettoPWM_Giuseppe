@@ -111,7 +111,7 @@ app.get('/homepage', (req, res) => {
 	library.playlistList = playlists;
 	res.render('index', {user: user, items: library});
   }).catch(err => {
-	console.log(err);
+	console.log(JSON.stringify(err));
 	res.render('error', {message: 'Errore nel recuperare i dati del tuo profilo.', error: err});
   });
 });
@@ -125,7 +125,7 @@ app.get('/search/:txt/:type', (req, res) => {
 	const type = req.params.type;
 	spotifyApiNotLogged.search(txt, [type]).then(results => {
 		res.send(results.body);
-		console.log(results);
+		//console.log(results);
 	})
 
 })
@@ -153,11 +153,11 @@ app.get('/more/:idPlaylist', (req, res) => {
 function isInMyLibrary(id, type){
 	if(type == 'playlist'){
 		return spotifyApi.getUserPlaylists().then(data => {
-			data.body.items.forEach(playlist => {
-				if(id === playlist.id){
+			//console.log(data.body);
+			for(i=0; i<data.body.total; i++){
+				if(id === data.body.items[i].id)
 					return true;
-				}
-			});
+			}
 			return false;
 		});
 	}
@@ -174,7 +174,8 @@ app.get('/createPlaylist/:data', (req, res)=>{
 	var id = '', playlistTracks = [];
 	//console.log(playlistData);
 	spotifyApi.createPlaylist(playlistData.title, {'description':playlistData.description, 'public':playlistData.isPublic}).then(data => {
-		//console.log(playlistData.artists);
+		console.log(playlistData.artists);
+
 		return id = data.body.id;
 	}).then(id => {
 		console.log(playlistData.numElem);
@@ -202,6 +203,24 @@ app.get('/createPlaylist/:data', (req, res)=>{
 		console.log('Errore nel creare la playlist ' + err);
 	});
 });
+
+app.get('/savePlaylist/:id', (req, res) => {
+	const idPlaylist = req.params.id;
+	spotifyApi.followPlaylist(idPlaylist).then(data => {
+		res.send(data);
+	}).catch(err => {
+		res.render('error', {message:'Non sono riuscito ad aggiungere la playlist ai tuoi preferiti', error: err});
+	})
+})
+
+app.get('/removePlaylist/:id', (req, res) => {
+	const idPlaylist = req.params.id;
+	spotifyApi.unfollowPlaylist(idPlaylist).then(data => {
+		res.send(data);
+	}).catch(err => {
+		res.render('error', {message:'Non sono riuscito a rimuovere la playlist dai tuoi preferiti', error: err});
+	})
+})
 
 var server = app.listen(port, () => {
 

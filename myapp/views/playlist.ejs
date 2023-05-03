@@ -119,7 +119,7 @@
             <i class="bx bx-menu sidebarOpen"></i>
             <div class="card-body">
               <!--hero section-->
-  
+              <% console.log(status) %>
               <div class="row p-4 pb-0 pe-lg-0 pt-lg-5 align-items-center rounded-3">
                   <div class="col-lg-7 p-3 p-lg-5 pt-lg-3">
                     <h1 class="display-4 fw-bold lh-1"><%= playlist.name %></h1>
@@ -131,9 +131,9 @@
                           <span id="addText">Accedi per salvare</span>
                         </a>
                       <% }else if(status == 'present'){ %>
-                        <a id="addButton" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold">
-                          <i class="bx bxs-heart" id='addIcon'></i>
-                          <span id="addText">Salvata</span>
+                        <a onclick="removePlaylist('<%= playlist.id %>')" id="addButton" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold">
+                          <i class="bx bxs-trash" id='addIcon'></i>
+                          <span id="addText">Rimuovi</span>
                         </a>
                       <% }else{ %> 
                         <a onclick="savePlaylist('<%= playlist.id %>')" id="addButton" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold">

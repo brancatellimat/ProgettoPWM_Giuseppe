@@ -4,15 +4,36 @@ async function savePlaylist(id){
     await fetch('/savePlaylist/'+id).then(response => {
         return response.json();
     }).then(data => {
+        console.log(data.body);
         let icon = document.getElementById('addIcon');
         let text = document.getElementById('addText');
+        let btn = document.getElementById('addButton');
         icon.classList.remove('bx-heart');
-        icon.classList.add('bxs-heart');
+        icon.classList.add('bxs-trash');
 
-        text.innerText = 'Salvata!';
+        text.innerText = 'Rimuovi';
+
+        btn.setAttribute('onclick', 'removePlaylist()');
         
 
     });
+}
+
+async function removePlaylist(id){
+  await fetch('/removePlaylist/'+id).then(response => {
+      return response.json();
+  }).then(data => {
+      console.log(data);
+      let icon = document.getElementById('addIcon');
+      let text = document.getElementById('addText');
+      let btn = document.getElementById('addButton');
+      icon.classList.remove('bxs-trash');
+      icon.classList.add('bx-heart');
+
+      text.innerText = 'Salva!';
+      btn.setAttribute('onclick', 'savePlaylist()');
+
+  });
 }
 
 async function accedi(){
