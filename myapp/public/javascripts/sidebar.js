@@ -56,3 +56,10 @@ function lightMode(){
   modeText.innerText = 'Dark mode';
   localStorage.setItem('darkmode', 'no');
 }
+
+document.onload = () => {
+  var screenWidth = screen.width;
+  if (screenWidth < 1200 && sidebar.className.toggle("visible")) {
+    sidebar.classList.remove("visible");
+  }
+}
