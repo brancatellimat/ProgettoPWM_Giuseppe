@@ -1,12 +1,14 @@
+// Moduli necessari
 const express = require('express');
 const SpotifyWebApi = require('spotify-web-api-node');
 const path = require('path');
 const app = express();
 const port = 3000;
 const bodyParser = require('body-parser');
+const { error } = require('console');
 
 // App permissions
-const scopes = ['ugc-image-upload', 'user-read-email', 'user-read-private','playlist-read-collaborative','playlist-modify-public','playlist-read-private','playlist-modify-private','user-library-modify','user-library-read','user-top-read', 'user-read-playback-position','user-read-recently-played','user-follow-read','user-follow-modify'];
+const scopes = ['ugc-image-upload', 'user-read-email', 'user-read-private','playlist-read-collaborative','playlist-modify-public','playlist-read-private','playlist-modify-private','user-library-modify','user-library-read','user-top-read', 'user-read-playback-position','user-read-recently-played','user-follow-read','user-follow-modify', 'user-modify-playback-state'];
 
 // App credentials
 const client_id = '5a1af06bc9f040e197b5d8ec7b323250';
@@ -15,10 +17,11 @@ const uri = 'http://127.0.0.1:3000/callback';
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
-var user = {}; //Object for user data
+var user = {}; //Object for user data (e.g. email, username)
 var library = {}; //Object for user items (e.g. playlist, artist, album..)
 
-app.set('views', path.join(__dirname, 'views'));
+// Setting template 
+app.set('views', path.join(__dirname, 'views')); 
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 
@@ -29,22 +32,23 @@ var spotifyApi = new SpotifyWebApi({
   redirectUri: uri,
 });
 
-// TODO: set app credentials for not-logged users
+// set app credentials for not-logged users
 var spotifyApiNotLogged = new SpotifyWebApi({
 	clientId: client_id,
 	clientSecret: secret,
 });
 
-// Retrive an access token
+// Retrive an access token for not logged user
 spotifyApiNotLogged.clientCredentialsGrant().then(
 	function(data){
 		// Save the access token so that it's used in future calls
-		console.log(data.body.access_token);
+		// console.log(data.body.access_token);
 		spotifyApiNotLogged.setAccessToken(data.body.access_token);
 	}, function(err) {
-		console.log('Something went wrong when retriving the access token', err);
+		res.render("error", {message: 'Errore nel recuperare l\'access token.', error: err});
 	}
 )
+
 
 app.get('/', (req, res) => {
   
@@ -65,35 +69,35 @@ app.get('/logout', (req, res) => {
 
 app.get('/callback', (req, res) => {
 	const error = req. query.error;
-	  const code = req.query.code;
-	  const state = req.query.state;
+	const code = req.query.code;
   
-	  if(error){
-		  console.error('Errore nella chiamata di callback: ', error);
-		  res.render('error', {message: 'Errore nella chiamata di callback', error: error});
-		  return;
-	  }
+	if(error){
+		console.error('Errore nella chiamata di callback: ', error);
+		res.render('error', {message: 'Errore nella chiamata di callback', error: error});
+		return;
+	}
   
-	  spotifyApi.authorizationCodeGrant(code)
-	  .then(data => {
-		  let access_t = data.body.access_token;
-		  let refresh_t = data.body.refresh_token;
-		  let expires_in = data.body.expires_in;
-  
-		  spotifyApi.setAccessToken(access_t);
-		  spotifyApi.setRefreshToken(refresh_t);
-		  res.redirect('/homepage');
-		  //Refresh access token
-		  setInterval(async () => {
-			  let data = await spotifyApi.refreshAccessToken();
-			  let access_token = data.body.access_token;
-		  }, expires_in / 2 * 1000);
-	  })
-	  .catch(err => {
-		  console.error('Errore nell\'ottenere i token: ', err);
-		  res.render('error', {message: 'Errore nell\'ottenere i token', error: err});
-	  });
+	spotifyApi.authorizationCodeGrant(code)
+	.then(data => {
+		let access_t = data.body.access_token;
+		let refresh_t = data.body.refresh_token;
+		let expires_in = data.body.expires_in;
+
+		spotifyApi.setAccessToken(access_t);
+		spotifyApi.setRefreshToken(refresh_t);
+		res.redirect('/homepage');
+		//Refresh access token
+		setInterval(async () => {
+			let data = await spotifyApi.refreshAccessToken();
+			let access_token = data.body.access_token;
+		}, expires_in / 2 * 1000);
+	})
+	.catch(err => {
+		console.error('Errore nell\'ottenere i token: ', err);
+		res.render('error', {message: 'Errore nell\'ottenere i token', error: err});
+	});
   })
+
 
 app.get('/homepage', (req, res) => {
   spotifyApi.getMe().then(data => {
@@ -136,7 +140,7 @@ app.get('/more/:idPlaylist', (req, res) => {
 		if(user.userData === undefined){
 			res.render('playlist', {user: user, playlist: results.body, status: 'no-login'});
 		}else {
-			isInMyLibrary(idPlaylist, 'playlist').then(result => {
+			isInMyLibrary(idPlaylist).then(result => {
 				if(result){
 					res.render('playlist', {user: user, playlist: results.body, status: 'present'});
 				}else {
@@ -150,23 +154,20 @@ app.get('/more/:idPlaylist', (req, res) => {
 	
 })
 
-function isInMyLibrary(id, type){
-	if(type == 'playlist'){
-		return spotifyApi.getUserPlaylists().then(data => {
-			//console.log(data.body);
-			for(i=0; i<data.body.total; i++){
-				if(id === data.body.items[i].id)
-					return true;
-			}
-			return false;
-		});
-	}
+function isInMyLibrary(id){
+	return spotifyApi.getUserPlaylists().then(data => {
+		//console.log(data.body);
+		for(i=0; i<data.body.total; i++){
+			if(id === data.body.items[i].id)
+				return true;
+		}
+		return false;
+	});
 }
 
 app.get('/create', (req, res) => {
 	res.render('create', {user:user});
 })
-
 
 app.get('/createPlaylist/:data', (req, res)=>{
 
@@ -190,7 +191,6 @@ app.get('/createPlaylist/:data', (req, res)=>{
 		});
 	}).then(array => {
 		return spotifyApi.addTracksToPlaylist(id, array).then(data => {
-			console.log('SONO QUI !!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 			return data;
 		}).catch(err => {
 			console.log('errore nell\'aggiungere le tracce alla playlist');

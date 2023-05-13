@@ -36,15 +36,7 @@ async function removePlaylist(id){
   });
 }
 
-async function accedi(){
-    /*await fetch('/login').then(response => {
-      console.log(response.url);
-      return response.url;
-    }).then(url => {
-      console.log('Sono qui');
-      console.log(typeof(url));
-      window.location.replace(url);
-    });*/
+function accedi(){
    let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = () => {
         //console.log(xhttp);
@@ -64,21 +56,10 @@ async function logout(){
       console.log(data);
       window.location.href = '/';
     });
-    /*let xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = () => {
-        console.log(xhttp);
-        if(xhttp.readyState == 4 && xhttp.status == 200)
-            console.log('Dati dell\'utente rimossi correttamente');
-            window.location.href = '/';
-    }
-
-    xhttp.open('GET', '/logout', true);
-    xhttp.send();*/
   }
 
-
   async function sendSearch(txt){
-    await fetch('/search/'+txt+'/playlist').then(data=>{
+    await fetch('/search/' + txt + "/playlist").then(data=>{
         return data.json();
     }).then(results=>{
         clearResultsArea();
@@ -126,33 +107,6 @@ async function logout(){
   function clearResultsArea(){
     const resultsArea = document.getElementById('results');
     resultsArea.innerHTML = '';
-  }
-
-  async function creaUltime50(){
-    await fetch('/creaUltime50').then(data => {
-      return data;
-    }).then(results => {
-      console.log(results);
-      createModal();
-    });
-  }
-
-  async function creaTopArtisti(){
-    await fetch('/creaTopArtisti').then(data => {
-      return data.body;
-    }).then(results => {
-      console.log(results);
-      createModal();
-    });
-  }
-
-  async function creaTopTracce(){
-    await fetch('/creaTopTracce').then(data => {
-      return data.body;
-    }).then(results => {
-      console.log(results);
-      createModal();
-    });
   }
 
   function createModal(){

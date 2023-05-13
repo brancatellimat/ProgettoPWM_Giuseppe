@@ -405,7 +405,6 @@ body.dark{
     }
     .home{
         top: 0;
-        top: 0;
         height: 100vh;
         background-color: var(--body-color);
         transition: var(--tran-05);
